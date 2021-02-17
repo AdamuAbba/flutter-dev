@@ -14,14 +14,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int temp;
+  var temp;
   var currently;
   var localName;
   var localHumidity;
   String finalCityName;
   Future getWeather() async {
     http.Response response = await http.get(
-        'http://api.openweathermap.org/data/2.5/weather?q=${util.defaultCity}&appid=${util.appId}&units=metric');
+        'http://api.openweathermap.org/data/2.5/weather?q=$finalCityName&appid=${util.appId}&units=metric');
     var result = jsonDecode(response.body);
     setState(() {
       this.localHumidity = result['main']['humidity'];
@@ -32,7 +32,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   void updateUi() {
-    setState(() {});
+    setState(() {
+      getWeather();
+    });
   }
 
   @override
@@ -100,19 +102,17 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          Expanded(
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              child: Align(
-                  alignment: Alignment.bottomRight,
-                  child: Text(
-                    temp == null ? 'Loading...' : weatherMessage(),
-                    style: GoogleFonts.lato(
-                      textStyle: tempStyle(),
-                    ),
-                    textAlign: TextAlign.end,
-                  )),
-            ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            child: Align(
+                alignment: Alignment.bottomRight,
+                child: Text(
+                  temp == null ? 'Loading...' : weatherMessage(),
+                  style: GoogleFonts.lato(
+                    textStyle: tempStyle(),
+                  ),
+                  textAlign: TextAlign.end,
+                )),
           ),
         ]),
       ),
@@ -131,7 +131,7 @@ class _HomePageState extends State<HomePage> {
     if (currently.toString() == "Clouds") {
       return 'bring a jacket just in case in Cupertino';
     } else if (temp <= 0) {
-      return 'you,ll need a ${Emojis.scarf} and ${Emojis.gloves} in ${util.defaultCity}';
+      return 'you,ll need a ${Emojis.scarf} and ${Emojis.gloves} in $finalCityName';
     } else
       return 'It\'s a beautiful day ';
   }
